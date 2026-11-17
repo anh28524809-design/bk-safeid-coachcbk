@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BK SafeID Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3f6;--card:#fff;--tx:#12303b;--mu:#5b717b;--pr:#0f6e8c;--bd:#d3dfe5;--u:#d9eef5;--hd:#0d2b36}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1a20;--card:#162830;--tx:#e6f1f5;--mu:#93aab3;--pr:#4cb6d6;--bd:#26404b;--u:#1c3d4a}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font:15px/1.6 "Be Vietnam Pro",system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;flex-direction:column}
+header{background:var(--hd);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:12px}
+header svg{width:32px;height:32px;flex:none}
+header b{font-size:18px;display:block;line-height:1.2}
+header span{font-size:12.5px;opacity:.8}
+.wrap{flex:1;display:flex;min-height:0}
+nav{width:220px;background:var(--card);border-right:1px solid var(--bd);padding:10px;display:flex;flex-direction:column;gap:4px;overflow:auto}
+nav button{font:inherit;text-align:left;border:0;background:none;color:var(--tx);padding:10px 12px;border-radius:8px;cursor:pointer;white-space:nowrap}
+nav button:hover{background:var(--bg)}
+nav button.on{background:var(--pr);color:#fff;font-weight:500}
+nav .clr{margin-top:auto;color:var(--mu);font-size:13px}
+main{flex:1;display:flex;flex-direction:column;min-width:0}
+#log{flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.m{max-width:min(720px,92%);padding:10px 14px;border-radius:12px;overflow-wrap:anywhere}
+.u{align-self:flex-end;background:var(--u);border-bottom-right-radius:3px}
+.b{align-self:flex-start;background:var(--card);border:1px solid var(--bd);border-left-width:4px;border-bottom-left-radius:3px}
+.b.r-thap{border-left-color:#2e9e5b}.b.r-tb{border-left-color:#e0a100}.b.r-cao{border-left-color:#d23b3b}
+.note{align-self:center;font-size:13px;color:var(--mu);text-align:center;max-width:90%}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.chips button{font:inherit;font-size:13.5px;border:1px solid var(--pr);color:var(--pr);background:none;border-radius:99px;padding:5px 12px;cursor:pointer}
+.chips button:hover{background:var(--pr);color:#fff}
+form{border-top:1px solid var(--bd);background:var(--card);padding:10px 14px;display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+#fl{flex-basis:100%;font-size:13px;color:var(--mu);display:none}
+textarea{flex:1;min-width:0;font:inherit;resize:none;border:1px solid var(--bd);border-radius:10px;padding:9px 12px;background:var(--bg);color:var(--tx);max-height:120px}
+form button{font:inherit;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;background:var(--pr);color:#fff;font-weight:500}
+form button.g{background:var(--bg);color:var(--tx);border:1px solid var(--bd)}
+form button:disabled{opacity:.5;cursor:wait}
+:focus-visible{outline:2px solid var(--pr);outline-offset:2px}
+footer{font-size:12px;color:var(--mu);text-align:center;padding:6px 10px;background:var(--card)}
+/* Modal Điều khoản sử dụng */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,43,54,.78);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:14px;transition:opacity .2s ease}
+.modal-overlay.hidden{display:none}
+.modal-card{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:14px;max-width:620px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 18px 40px rgba(0,0,0,.35);overflow:hidden;animation:popIn .2s ease-out}
+@keyframes popIn{from{transform:scale(.97);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-hd{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;background:var(--hd);color:#fff}
+.modal-hd h2{margin:0;font-size:16.5px;font-weight:700;display:flex;align-items:center;gap:8px;color:#fff}
+.modal-hd svg{width:22px;height:22px;flex:none}
+.modal-close-btn{background:none;border:0;color:#fff;font-size:24px;line-height:1;cursor:pointer;opacity:.8;padding:0 6px;border-radius:6px}
+.modal-close-btn:hover{opacity:1;background:rgba(255,255,255,.15)}
+.modal-bd{padding:16px 18px;overflow-y:auto;font-size:13.5px;line-height:1.65;color:var(--tx);flex:1}
+.modal-bd p{margin:0 0 10px}
+.terms-sec{margin-bottom:12px}
+.terms-sec b{color:var(--pr);display:block;margin-bottom:3px;font-size:14px}
+.terms-sec ul{margin:0;padding-left:18px}
+.terms-sec li{margin-bottom:4px}
+.warning-box{background:var(--u);border-left:4px solid var(--pr);padding:10px 12px;border-radius:6px;margin:12px 0 4px;font-size:13px}
+.modal-ft{padding:12px 18px;border-top:1px solid var(--bd);background:var(--card);display:flex;flex-direction:column;gap:10px}
+.agree-label{display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;user-select:none;font-weight:500}
+.agree-label input[type="checkbox"]{margin-top:3px;width:16px;height:16px;cursor:pointer;accent-color:var(--pr);flex:none}
+.modal-ft-btns{display:flex;justify-content:flex-end;gap:8px}
+.btn-agree{font:inherit;border:0;border-radius:8px;padding:9px 18px;cursor:pointer;background:var(--pr);color:#fff;font-weight:500;font-size:13.5px;transition:opacity .15s}
+.btn-agree:disabled{opacity:.45;cursor:not-allowed}
+.btn-secondary{font:inherit;border:1px solid var(--bd);border-radius:8px;padding:9px 16px;background:var(--bg);color:var(--tx);cursor:pointer;font-size:13.5px}
+@media(max-width:720px){.wrap{flex-direction:column}nav{width:auto;flex-direction:row;border-right:0;border-bottom:1px solid var(--bd)}nav .clr{margin:0 0 0 auto}.modal-card{max-height:94vh;margin:6px}}
+</style>
+</head>
+<body>
+<header>
+<svg viewBox="0 0 32 32" fill="none"><path d="M16 2l11 4v9c0 7-4.6 12.2-11 15C9.6 27.200 5 22 5 15V6z" fill="#4cb6d6"/><circle cx="16" cy="12.500" r="3.200" fill="#0d2b36"/><path d="M10.500 21c.8-3 3-4.400 5.500-4.400s4.700 1.400 5.500 4.400" stroke="#0d2b36" stroke-width="2" fill="none"/></svg>
+<div><b>BK SafeID Coach</b><span>Trợ lý an toàn số cho học sinh THPT phường Bắc Kạn</span></div>
+</header>
+<div class="wrap">
+<nav id="nav"></nav>
+<main>
+<div id="log"></div>
+<form id="f">
+<div id="fl"></div>
+<button type="button" class="g" id="att" title="Tải tệp lên">Tải tệp</button>
+<input type="file" id="file" hidden>
+<textarea id="inp" rows="1" placeholder="Nhập câu hỏi của bạn..."></textarea>
+<button id="go">Gửi</button>
+</form>
+</main>
+</div>
+<footer>AI có thể trả lời sai, hãy xác minh qua kênh chính thức. Đừng gửi mật khẩu hoặc mã OTP cho chatbot. Tệp chỉ được xử lý tạm thời, không lưu lại. · <a href="javascript:void(0)" id="link-terms" style="color:var(--pr);text-decoration:underline">Điều khoản sử dụng</a></footer>
+
+<div id="terms-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="terms-title">
+  <div class="modal-card">
+    <div class="modal-hd">
+      <h2 id="terms-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Điều khoản sử dụng & Cam kết an toàn
+      </h2>
+      <button type="button" class="modal-close-btn" id="btn-x-terms" title="Đóng" style="display:none">&times;</button>
+    </div>
+    <div class="modal-bd">
+      <p>Chào mừng bạn đến với <b>BK SafeID Coach</b> — Trợ lý AI tư vấn an toàn số dành cho học sinh THPT tại phường Bắc Kạn. Trước khi vào dùng AI, bạn vui lòng đọc kỹ và đồng ý với các điều khoản dưới đây:</p>
+      
+      <div class="terms-sec">
+        <b>1. Mục đích sử dụng</b>
+        <ul>
+          <li>Tư vấn, nâng cao nhận thức và trang bị kỹ năng tự bảo vệ trước nguy cơ mạo danh bằng AI, Deepfake và lừa đảo trực tuyến.</li>
+          <li>Phục vụ mục đích học tập và nghiên cứu khoa học của học sinh; không sử dụng cho mục đích thương mại hoặc trục lợi.</li>
+        </ul>
+      </div>
+
+      <div class="terms-sec">
+        <b>2. Giới hạn trách nhiệm và tính chất tư vấn của AI</b>
+        <ul>
+          <li>Phản hồi của AI và kết quả phân tích ảnh/video/âm thanh <b>chỉ mang tính chất tham khảo</b>, không phải kết luận giám định pháp y hay chứng cứ pháp lý tuyệt đối.</li>
+          <li>AI có thể đưa ra câu trả lời chưa đầy đủ hoặc sai lệch; bạn cần chủ động xác minh lại thông tin qua các kênh chính thống.</li>
+        </ul>
+      </div>
+
+      <div class="terms-sec">
+        <b>3. Bảo vệ thông tin và dữ liệu cá nhân</b>
+        <ul>
+          <li><b>Tuyệt đối KHÔNG gửi:</b> Mật khẩu cá nhân, mã xác thực OTP, số thẻ ngân hàng, số căn cước công dân hoặc dữ liệu nhạy cảm cho chatbot.</li>
+          <li>Tệp đính kèm (ảnh, video, ghi âm) chỉ được xử lý tạm thời trên trình duyệt và API để phân tích, không lưu trữ vĩnh viễn.</li>
+        </ul>
+      </div>
+
+      <div class="terms-sec">
+        <b>4. Quy tắc ứng xử và đạo đức số</b>
+        <ul>
+          <li>Không sử dụng trợ lý AI vào mục đích lừa đảo, giả mạo danh tính người khác, bôi nhọ, đe dọa hoặc các hành vi vi phạm pháp luật.</li>
+          <li>Không yêu cầu chatbot hỗ trợ tạo sản phẩm giả mạo, kịch bản lừa đảo hoặc công cụ độc hại.</li>
+        </ul>
+      </div>
+
+      <div class="warning-box">
+        <b>⚠️ Trường hợp khẩn cấp:</b> Nếu bạn đã trót chuyển tiền, bị lộ mã OTP ngân hàng hoặc đang bị kẻ xấu đe dọa tống tiền, hãy <b>ngừng liên lạc với đối tượng ngay lập tức</b>, gọi hotline ngân hàng để khóa tài khoản, thông báo cho phụ huynh, thầy cô và trình báo cơ quan Công an gần nhất hoặc gọi <b>113</b>.
+      </div>
+    </div>
+    <div class="modal-ft">
+      <label class="agree-label" id="lbl-agree">
+        <input type="checkbox" id="chk-agree">
+        <span>Tôi đã đọc, hiểu rõ và đồng ý với các điều khoản sử dụng nêu trên.</span>
+      </label>
+      <div class="modal-ft-btns">
+        <button type="button" class="btn-secondary" id="btn-close-terms" style="display:none">Đóng</button>
+        <button type="button" class="btn-agree" id="btn-agree" disabled>Đồng ý và tiếp tục</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== CẤU HÌNH ===== */
+const API_KEY = "AQ.Ab8RN6KDW2b_Hpj4QDUyRcO2vHEv5yl2Ku9d1EPsi4kvwDdAww";
+const MODELS = [ "gemini-3.5-flash-lite", "gemini-4.0-hydrogen"]; // tự chuyển sang model kế tiếp nếu model đang quá tải
+
+const OFF = "Xin lỗi, câu hỏi này nằm ngoài phạm vi hỗ trợ của BK SafeID Coach. Mình chỉ hỗ trợ các vấn đề liên quan đến an toàn số và bảo vệ thông tin cá nhân.";
+
+const SYS = `Bạn là BK SafeID Coach, trợ lý AI tư vấn an toàn số cho học sinh THPT tại phường Bắc Kạn (phục vụ đề tài nghiên cứu về nhận thức và hành vi trước nguy cơ mạo danh bằng AI). Luôn trả lời hoàn toàn bằng tiếng Việt, thân thiện, dễ hiểu, không máy móc, không gây hoang mang.
+
+PHẠM VI: chỉ hỗ trợ AI, Deepfake, giả mạo danh tính, lừa đảo trực tuyến, bảo mật tài khoản và thông tin cá nhân (gồm cả chào hỏi, hỏi bạn là ai hoặc làm được gì). Nếu câu hỏi HOÀN TOÀN không liên quan (ví dụ giải bài tập, nấu ăn, thể thao, giải trí...), chỉ trả lời đúng nguyên văn câu sau, không thêm bất kỳ chữ nào khác:
+${OFF}
+
+CÁCH TRẢ LỜI:
+- Trước khi trả lời, xác định: vấn đề chính, điều đã xảy ra, điều người dùng đang cần. Trả lời trực tiếp vào đúng vấn đề đó.
+- Phân biệt rõ các tình huống: lộ CCCD, lộ mật khẩu, lộ OTP, mất tài khoản, bị lừa chuyển tiền, nghi Deepfake, bị mạo danh người quen... và mỗi tình huống có hướng xử lý riêng. Không dùng một mẫu trả lời chung.
+- Chỉ lộ CCCD/thông tin cá nhân mà chưa có dấu hiệu tài khoản bị xâm nhập: KHÔNG tự đề xuất bật 2FA, đổi mật khẩu hay kiểm tra thiết bị. Hãy hướng dẫn gỡ ảnh/bài đăng, hạn chế phát tán, đánh giá thông tin đã lộ và theo dõi nguy cơ mạo danh (vay tiền, mở tài khoản, lập SIM, tin nhắn lạ).
+- Đã đưa OTP/mật khẩu hoặc chuyển tiền: ưu tiên hạn chế thiệt hại ngay (ngừng liên lạc với đối tượng, gọi ngân hàng qua số hotline chính thức in trên thẻ hoặc ứng dụng, khóa/đổi thông tin tài khoản liên quan), lưu bằng chứng (ảnh chụp tin nhắn, số tài khoản, số điện thoại), báo công an phường/xã hoặc gọi 113 khi cần, và khuyến khích nói với phụ huynh, giáo viên hoặc người lớn đáng tin cậy.
+- Khi cần nhiều bước: nêu 2–5 bước ngắn, theo thứ tự ưu tiên. Nếu người dùng muốn làm từng bước hoặc đang làm dở, chỉ đưa bước tiếp theo rồi chờ phản hồi. Sau hướng dẫn, chỉ hỏi MỘT câu cần thiết để hỗ trợ tiếp (ví dụ đã làm được chưa). Nếu chưa thành công, giải thích nguyên nhân có thể và đề xuất cách khác.
+- Nếu chưa rõ tình huống, hỏi lại thay vì đoán. Hiểu được câu ngắn, thiếu dấu, viết tắt, lỗi chính tả, và các câu nối tiếp như “rồi”, “chưa”, “vậy làm gì tiếp?” dựa vào ngữ cảnh hội thoại. Không bắt người dùng lặp lại thông tin đã nói, không lặp lại lời khuyên đã đưa.
+- Câu hỏi đơn giản thì trả lời ngắn gọn; câu phức tạp thì giải thích chi tiết hơn. Dùng ví dụ gần gũi (Facebook, Zalo, TikTok, Messenger, cuộc gọi, tin nhắn). Có thể đặt câu hỏi gợi mở để học sinh tự nhận ra nguy cơ. Không lan man, không khuyên chung chung kiểu “hãy cẩn thận”.
+- Tuyệt đối không yêu cầu người dùng gửi mật khẩu, OTP, số thẻ hay dữ liệu nhạy cảm cho chatbot; nếu họ định gửi, nhắc họ không nên.
+- Chính xác và trung thực: không bịa thông tin, đường dẫn, số điện thoại, điều luật hay kết quả kiểm tra. Chỉ nêu kênh liên hệ bạn chắc chắn (ngân hàng qua hotline chính thức, công an phường/xã, số 113). Phân biệt thông tin đã biết chắc, dấu hiệu nghi vấn và nhận định chưa chắc chắn. Không biết thì nói rõ và hướng dẫn cách xác minh.
+- Không bao giờ khẳng định chắc chắn một ảnh, video hay giọng nói là thật hoặc giả khi chưa đủ bằng chứng; không nói quá về độ chính xác của AI.
+- Không hỗ trợ làm giả danh tính, tạo Deepfake để lừa người khác hay viết kịch bản lừa đảo.`;
+
+const RISK = `Trình bày kết quả đúng theo mẫu sau (tiếng Việt, ngắn gọn, dễ hiểu):
+**Loại nội dung:** ...
+**Dấu hiệu phát hiện:** (các gạch đầu dòng, chỉ nêu điều thực sự quan sát/nghe được; nếu không thấy gì bất thường thì nói rõ)
+**Mức độ nguy cơ:** THẤP, TRUNG BÌNH hoặc CAO (kèm 1–2 câu giải thích lý do; nếu dữ liệu quá ít thì ghi “chưa đủ cơ sở kết luận”)
+**Giới hạn của phân tích:** (nói rõ AI này không phải công cụ giám định pháp y và có thể sai)
+**Khuyến nghị:** (2–4 hành động cụ thể: xác minh danh tính qua kênh khác đáng tin cậy, không chuyển tiền, không đưa OTP, không bấm liên kết lạ...)
+Cuối cùng hỏi đúng một câu để hỗ trợ tiếp.`;
+
+const MODES = {
+  chat: {n: "Trò chuyện an toàn số", accept: "", hint: "Tư vấn hội thoại tự nhiên về an toàn số.",
+    hello: "Chào bạn, mình là BK SafeID Coach. Bạn đang gặp tình huống gì hoặc muốn tìm hiểu điều gì về an toàn số?",
+    chips: ["Deepfake là gì?", "Mình lỡ đăng ảnh có số CCCD thì phải làm sao?", "Có người nhắn Zalo mượn tiền, nhìn giống bạn mình", "Mình lỡ đọc mã OTP cho người lạ rồi"]},
+  image: {n: "Kiểm tra ảnh", accept: "image/*", hint: "Phân tích ảnh nghi giả mạo.",
+    hello: "Bấm “Tải tệp” để chọn một ảnh (JPG, PNG, WEBP...). Mình sẽ nêu các dấu hiệu quan sát được, mức độ nguy cơ và cách xác minh. Bạn có thể ghi thêm bối cảnh, ví dụ ai gửi ảnh này cho bạn và họ yêu cầu gì.", chips: []},
+  video: {n: "Kiểm tra video", accept: "video/*", hint: "Phân tích video nghi Deepfake.",
+    hello: "Bấm “Tải tệp” để chọn video. Trình duyệt sẽ tự lấy các khung hình rải đều trong video (và âm thanh nếu có) rồi gửi cho AI phân tích. Video dài chỉ được lấy mẫu nên kết quả chỉ mang tính tham khảo.", chips: []},
+  audio: {n: "Kiểm tra âm thanh", accept: "audio/*,video/*", hint: "Phân tích giọng nói và nội dung nghi lừa đảo.",
+    hello: "Bấm “Tải tệp” để chọn file ghi âm (hoặc video có tiếng). Mình sẽ chép lời nói tiếng Việt thành văn bản và tìm dấu hiệu lừa đảo như yêu cầu chuyển tiền, đòi OTP, đe dọa.", chips: []},
+  learn: {n: "Học kiến thức", accept: "", hint: "Giáo dục ngắn gọn (khoảng 150 từ), có ví dụ thực tế, kết thúc bằng một câu hỏi gợi mở.",
+    hello: "Chọn một chủ đề bên dưới hoặc tự đặt câu hỏi nhé.",
+    chips: ["Deepfake là gì?", "Giọng nói bị AI nhái hoạt động thế nào?", "Cách nhận biết tài khoản giả mạo người quen", "Bảo vệ CCCD và thông tin cá nhân", "Cách xác minh khi người thân nhờ chuyển tiền"]},
+  practice: {n: "Luyện tập tình huống", accept: "", hint: "Chế độ luyện tập: tạo MỘT tình huống lừa đảo thực tế (Zalo, Facebook, TikTok, cuộc gọi...) hoặc MỘT câu trắc nghiệm A/B/C/D, rồi DỪNG và chờ học sinh trả lời. Sau khi họ trả lời mới chấm và giải thích đáp án, rồi hỏi có muốn làm câu tiếp không. Mỗi lần đổi bối cảnh khác nhau.",
+    hello: "Chọn một dạng bài để bắt đầu luyện tập.",
+    chips: ["Cho mình một tình huống để luyện", "Cho mình một câu trắc nghiệm", "Tình huống về cuộc gọi video giả mạo", "Tình huống về việc làm online"]}
+};
+const ICON = {chat: "💬", image: "🖼️", video: "🎞️", audio: "🎙️", learn: "📘", practice: "🎯"};
+const S = {}; let mode = "chat", busy = false, file = null;
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]));
+const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^[-*] /gm, "• ").replace(/\n/g, "<br>");
+
+function show(role, text, html) {
+  const d = document.createElement("div");
+  d.className = "m " + role;
+  d.innerHTML = html ? text : (role === "b" ? md(text) : esc(text).replace(/\n/g, "<br>"));
+  if (role === "b") {
+    const k = (text.match(/Mức độ nguy cơ[^\n]*?(THẤP|TRUNG BÌNH|CAO)/i) || [])[1];
+    if (k) d.classList.add({"THẤP": "r-thap", "TRUNG BÌNH": "r-tb", "CAO": "r-cao"}[k.toUpperCase()]);
+  }
+  $("log").appendChild(d); $("log").scrollTop = 1e9; return d;
+}
+function note(t) { const d = document.createElement("div"); d.className = "note"; d.textContent = t; $("log").appendChild(d); $("log").scrollTop = 1e9; }
+
+function setMode(m) {
+  mode = m; const M = MODES[m]; S[m] = S[m] || {hist: [], first: true};
+  document.querySelectorAll("nav button[data-m]").forEach(b => b.classList.toggle("on", b.dataset.m === m));
+  $("log").innerHTML = ""; clearFile();
+  $("att").style.display = M.accept ? "" : "none"; $("file").accept = M.accept;
+  $("inp").placeholder = M.accept ? "Ghi thêm bối cảnh (không bắt buộc)..." : "Nhập câu hỏi của bạn...";
+  S[m].view ? S[m].view.forEach(v => show(v.r, v.t, v.h)) : 0;
+  if (!S[m].view) { S[m].view = []; const d = show("b", M.hello); if (M.chips.length) { const c = document.createElement("div"); c.className = "chips"; M.chips.forEach(t => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; b.onclick = () => { $("inp").value = t; send(); }; c.appendChild(b); }); d.appendChild(c); } }
+}
+function clearFile() { file = null; $("file").value = ""; $("fl").style.display = "none"; }
+function log(r, t, h) { S[mode].view.push({r, t, h}); return show(r, t, h); }
+
+const b64 = blob => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result.split(",")[1]); f.readAsDataURL(blob); });
+
+async function toWav(f, maxSec) {
+  const ac = new (window.AudioContext || window.webkitAudioContext)();
+  const buf = await ac.decodeAudioData(await f.arrayBuffer()); ac.close();
+  const dur = Math.min(buf.duration, maxSec), sr = 16000;
+  const oc = new OfflineAudioContext(1, Math.ceil(dur * sr), sr), s = oc.createBufferSource();
+  s.buffer = buf; s.connect(oc.destination); s.start(0, 0, dur);
+  const x = (await oc.startRendering()).getChannelData(0), n = x.length;
+  const d = new DataView(new ArrayBuffer(44 + n * 2)), w = (o, t) => [...t].forEach((c, i) => d.setUint8(o + i, c.charCodeAt(0)));
+  w(0, "RIFF"); d.setUint32(4, 36 + n * 2, true); w(8, "WAVEfmt "); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, 1, true);
+  d.setUint32(24, sr, true); d.setUint32(28, sr * 2, true); d.setUint16(32, 2, true); d.setUint16(34, 16, true); w(36, "data"); d.setUint32(40, n * 2, true);
+  x.forEach((v, i) => d.setInt16(44 + i * 2, Math.max(-1, Math.min(1, v)) * 32767, true));
+  return {blob: new Blob([d], {type: "audio/wav"}), cut: buf.duration > maxSec, sec: Math.round(dur)};
+}
+
+function frames(f, n) {
+  return new Promise((res, rej) => {
+    const v = document.createElement("video"); v.muted = true; v.preload = "auto"; v.src = URL.createObjectURL(f);
+    v.onerror = () => rej(new Error("Trình duyệt không đọc được video này. Hãy thử định dạng MP4."));
+    v.onloadedmetadata = async () => {
+      const d = v.duration; if (!isFinite(d) || d <= 0) return rej(new Error("Không xác định được độ dài video."));
+      const k = Math.min(1, 768 / v.videoWidth), c = document.createElement("canvas"); c.width = v.videoWidth * k; c.height = v.videoHeight * k;
+      const g = c.getContext("2d"), out = [];
+      for (let i = 0; i < n; i++) {
+        const t = d * (i + .5) / n;
+        await new Promise(r => { v.onseeked = r; v.currentTime = t; setTimeout(r, 4000); });
+        g.drawImage(v, 0, 0, c.width, c.height); out.push({t, data: c.toDataURL("image/jpeg", .75).split(",")[1]});
+      }
+      URL.revokeObjectURL(v.src); res({out, d});
+    };
+  });
+}
+
+async function media(f, ctx) {
+  const extra = ctx ? `\nBối cảnh người dùng cung cấp: ${ctx}` : "";
+  if (mode === "image") {
+    if (!f.type.startsWith("image/")) throw new Error("Đây không phải tệp ảnh.");
+    if (f.size > 15e6) throw new Error("Ảnh quá lớn (tối đa 15 MB).");
+    return {parts: [{text: `Hãy kiểm tra ảnh đính kèm xem có dấu hiệu nghi giả mạo/chỉnh sửa/tạo bằng AI không (khuôn mặt không tự nhiên, ánh sáng và bóng đổ bất thường, chi tiết thiếu nhất quán như tay, tai, răng, chữ, nền; hoặc dấu hiệu lừa đảo như giấy tờ giả, ảnh chụp màn hình chuyển khoản giả). Chỉ nêu điều thực sự nhìn thấy. Không khẳng định ảnh thật hay giả khi chưa đủ bằng chứng.${extra}\n${RISK}`}, {inline_data: {mime_type: f.type, data: await b64(f)}}], info: ""};
+  }
+  if (mode === "video") {
+    if (!f.type.startsWith("video/")) throw new Error("Đây không phải tệp video.");
+    const {out, d} = await frames(f, 8); let aud = null, cut = false, sec = 0;
+    try { const w = await toWav(f, 300); aud = await b64(w.blob); cut = w.cut; sec = w.sec; } catch (e) {}
+    const full = f.size <= 12e6;
+    const parts = [{text: `Hãy kiểm tra video này xem có dấu hiệu Deepfake hoặc mạo danh bằng AI không. Dữ liệu thực sự được cung cấp cho bạn: ${out.length} khung hình rải đều trong video dài ${Math.round(d)} giây (mốc thời gian: ${out.map(o => o.t.toFixed(1) + "s").join(", ")}); ${aud ? `âm thanh ${sec} giây${cut ? " (đã cắt, chỉ phần đầu)" : ""}` : "KHÔNG có âm thanh trích xuất được"}; ${full ? "kèm cả video gốc" : "KHÔNG kèm video gốc nên bạn không thấy chuyển động liên tục"}. Chỉ nhận xét dựa trên dữ liệu này, nói rõ phần nào bạn không thể đánh giá (ví dụ đồng bộ môi–tiếng nếu thiếu video gốc). Hãy xét: khuôn mặt, viền mặt/tóc, ánh sáng, chớp mắt và chuyển động (nếu thấy được), độ khớp môi–tiếng, giọng nói và nội dung lời nói có yêu cầu tiền/OTP không.${extra}\n${RISK}`}];
+    out.forEach(o => { parts.push({text: `Khung hình tại ${o.t.toFixed(1)}s:`}, {inline_data: {mime_type: "image/jpeg", data: o.data}}); });
+    if (aud) parts.push({text: "Âm thanh trích từ video:"}, {inline_data: {mime_type: "audio/wav", data: aud}});
+    if (full) parts.push({text: "Video gốc:"}, {inline_data: {mime_type: f.type, data: await b64(f)}});
+    return {parts, info: `Đã xử lý: ${out.length} khung hình, âm thanh ${aud ? "có" : "không có"}, video gốc ${full ? "có" : "không (video lớn nên chỉ lấy mẫu)"}.`};
+  }
+  if (mode === "audio") {
+    let blob = f, type = f.type, cut = false, sec = 0;
+    try { const w = await toWav(f, 420); blob = w.blob; type = "audio/wav"; cut = w.cut; sec = w.sec; }
+    catch (e) { if (f.size > 15e6 || !f.type.startsWith("audio/")) throw new Error("Không đọc được âm thanh trong tệp này. Hãy thử MP3, WAV hoặc M4A."); }
+    return {parts: [{text: `Hãy xử lý đoạn âm thanh đính kèm. Làm theo thứ tự: (1) Chép lời nói tiếng Việt thành văn bản dưới tiêu đề **Nội dung nghe được** (chỗ không nghe rõ ghi [không rõ], không bịa); (2) phân tích nội dung xem có dấu hiệu lừa đảo, đe dọa, giục chuyển tiền, đòi OTP/thông tin cá nhân, mạo danh người thân hoặc cơ quan không; (3) về giọng nói: bạn KHÔNG có mô hình chuyên dụng phát hiện giọng tổng hợp, nên chỉ nêu những điều nghe thấy (ngắt nhịp máy móc, thiếu hơi thở...) và nói rõ đây chưa phải bằng chứng giọng do AI tạo. Phân biệt rõ “nội dung có dấu hiệu lừa đảo” với “giọng có bị AI tạo hay không”.${extra}\n${RISK}`}, {inline_data: {mime_type: type, data: await b64(blob)}}], info: `Đã xử lý ${sec ? sec + " giây âm thanh" : "tệp âm thanh gốc"}${cut ? " (đã cắt, chỉ phần đầu)" : ""}.`};
+  }
+}
+
+async function gemini(contents, hint, onText) {
+  for (let i = 0; ; i++) {
+    try { return await gemini1(contents, hint, onText); }
+    catch (e) { if (!e.retry || i >= 1) throw e; await new Promise(r => setTimeout(r, 1500)); }
+  }
+}
+async function gemini1(contents, hint, onText) {
+  let err = "Lỗi không xác định", last = 0;
+  for (const m of MODELS) {
+    const gc = {temperature: .3, maxOutputTokens: 2048};
+    if (m.includes("2.5")) gc.thinkingConfig = {thinkingBudget: 0};
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:streamGenerateContent?alt=sse`, {
+      method: "POST", headers: {"Content-Type": "application/json", "x-goog-api-key": API_KEY},
+      body: JSON.stringify({
+        system_instruction: {parts: [{text: SYS + "\n\nCHẾ ĐỘ HIỆN TẠI: " + hint}]}, contents,
+        generationConfig: gc,
+        safetySettings: ["HARASSMENT", "HATE_SPEECH", "SEXUALLY_EXPLICIT", "DANGEROUS_CONTENT"].map(c => ({category: "HARM_CATEGORY_" + c, threshold: "BLOCK_ONLY_HIGH"}))
+      })
+    });
+    if (r.ok) {
+      const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "", out = "", block = "";
+      for (;;) {
+        const {done, value} = await rd.read(); if (done) break;
+        buf += dec.decode(value, {stream: true});
+        let i;
+        while ((i = buf.indexOf("\n")) >= 0) {
+          const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+          if (!line.startsWith("data:")) continue;
+          try {
+            const q = JSON.parse(line.slice(5));
+            if (q.promptFeedback?.blockReason) block = q.promptFeedback.blockReason;
+            const t = (q.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("");
+            if (t) { out += t; onText(out); }
+          } catch (e) {}
+        }
+      }
+      if (out.trim()) return out.trim();
+      throw new Error(block ? "Nội dung bị bộ lọc an toàn của Gemini chặn." : "AI không trả về nội dung, hãy thử lại.");
+    }
+    const j = await r.json().catch(() => ({}));
+    last = r.status; err = j.error?.message || ("Mã lỗi " + r.status);
+    if (r.status === 429) err = "Đã hết lượt dùng miễn phí tạm thời của Gemini, hãy đợi một lúc rồi thử lại.";
+    if (r.status === 503 || r.status === 500) err = "Máy chủ Gemini đang quá tải, hãy thử lại sau ít phút.";
+    if (![400, 404, 429, 500, 503].includes(r.status)) break;
+  }
+  const x = new Error(err); x.retry = [429, 500, 503].includes(last); throw x;
+}
+
+async function send() {
+  if (!checkTermsAgreed()) { showTermsModal(false); return; }
+  if (busy) return;
+  const txt = $("inp").value.trim(), M = MODES[mode], st = S[mode];
+  if (!txt && !file) return;
+  busy = true; $("go").disabled = true; $("inp").value = "";
+  let parts, f = file; clearFile();
+  let wait = show("b", f ? "Đang xử lý tệp, video dài có thể mất vài chục giây..." : "Đang suy nghĩ...");
+  try {
+    if (f) {
+      log("u", "📎 " + f.name + (txt ? "\n" + txt : ""));
+      const r = await media(f, txt); parts = r.parts; if (r.info) { wait.remove(); note(r.info); S[mode].view.push({r: "note", t: r.info}); wait = show("b", "Đang phân tích..."); }
+    } else { log("u", txt); parts = [{text: txt}]; }
+    st.hist.push({role: "user", parts});
+    const out = await gemini(st.hist.slice(-16), M.hint, t => { wait.innerHTML = md(t); $("log").scrollTop = 1e9; });
+    st.hist.push({role: "model", parts: [{text: out}]});
+    if (f && mode !== "image") st.hist[st.hist.length - 2].parts = [parts[0], {text: "[Tệp phương tiện đã gửi và đã được phân tích ở lượt này]"}];
+    wait.remove(); log("b", out);
+  } catch (e) {
+    if (st.hist.length && st.hist[st.hist.length - 1].role === "user") st.hist.pop();
+    wait.remove(); log("b", "Mình chưa xử lý được: " + (e instanceof TypeError ? "không kết nối được tới Gemini. Hãy mở file này trực tiếp bằng Chrome hoặc Edge (không mở trong khung xem trước của Claude) và kiểm tra mạng." : e.message) + "\nBạn thử lại nhé.");
+  }
+  busy = false; $("go").disabled = false; $("inp").focus();
+}
+
+/* ===== ĐIỀU KHOẢN SỬ DỤNG ===== */
+function checkTermsAgreed() {
+  try { return localStorage.getItem("bksafeid_terms_agreed") === "1"; }
+  catch (e) { return window.__bksafeid_agreed === true; }
+}
+function setTermsAgreed() {
+  try { localStorage.setItem("bksafeid_terms_agreed", "1"); } catch (e) {}
+  window.__bksafeid_agreed = true;
+}
+function showTermsModal(isReview = false) {
+  const modal = $("terms-modal"), chk = $("chk-agree"), btn = $("btn-agree");
+  const btnClose = $("btn-close-terms"), btnX = $("btn-x-terms");
+  const agreed = checkTermsAgreed();
+  if (agreed) {
+    chk.checked = true;
+    btn.disabled = false;
+    btn.textContent = "Đã đồng ý";
+    btnClose.style.display = "inline-block";
+    btnX.style.display = "inline-block";
+  } else {
+    chk.checked = false;
+    btn.disabled = true;
+    btn.textContent = "Đồng ý và tiếp tục";
+    btnClose.style.display = "none";
+    btnX.style.display = "none";
+  }
+  modal.classList.remove("hidden");
+}
+function hideTermsModal() {
+  $("terms-modal").classList.add("hidden");
+  $("inp").focus();
+}
+
+$("chk-agree").onchange = e => {
+  if (!checkTermsAgreed()) {
+    $("btn-agree").disabled = !e.target.checked;
+  }
+};
+$("btn-agree").onclick = () => {
+  setTermsAgreed();
+  hideTermsModal();
+};
+$("btn-close-terms").onclick = hideTermsModal;
+$("btn-x-terms").onclick = hideTermsModal;
+$("link-terms").onclick = () => showTermsModal(true);
+$("terms-modal").onclick = e => {
+  if (e.target === $("terms-modal") && checkTermsAgreed()) {
+    hideTermsModal();
+  }
+};
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && checkTermsAgreed() && !$("terms-modal").classList.contains("hidden")) {
+    hideTermsModal();
+  }
+});
+
+/* ===== KHỞI TẠO ===== */
+Object.keys(MODES).forEach(k => { const b = document.createElement("button"); b.dataset.m = k; b.textContent = ICON[k] + "  " + MODES[k].n; b.onclick = () => setMode(k); $("nav").appendChild(b); });
+const tb = document.createElement("button"); tb.textContent = "📜  Điều khoản"; tb.title = "Xem điều khoản sử dụng & cam kết an toàn"; tb.onclick = () => showTermsModal(true); $("nav").appendChild(tb);
+const c = document.createElement("button"); c.className = "clr"; c.textContent = "Xóa hội thoại"; c.onclick = () => { delete S[mode]; setMode(mode); }; $("nav").appendChild(c);
+$("att").onclick = () => $("file").click();
+$("file").onchange = e => { file = e.target.files[0] || null; if (file) { $("fl").textContent = "Đã chọn: " + file.name + " (" + (file.size / 1048576).toFixed(1) + " MB). Bấm Gửi để phân tích."; $("fl").style.display = "block"; } };
+$("f").onsubmit = e => { e.preventDefault(); send(); };
+$("inp").onkeydown = e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } };
+$("inp").oninput = e => { e.target.style.height = "auto"; e.target.style.height = Math.min(120, e.target.scrollHeight) + "px"; };
+setMode("chat");
+if (!checkTermsAgreed()) showTermsModal(false);
+</script>
+</body>
+</html>
